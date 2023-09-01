@@ -515,7 +515,7 @@ def strip_prefix_and_sufix(str_, prefix, suffix):
         else:
             return str_[len(prefix):]
     return None
-            
+
 def process_tycon(tycon, methods_by_name):
     """Build a Python class to represent a Haskell tycon. Parameter
     'tycon' should by a TyCon object (the kind of object used by the

@@ -1,8 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables,ExistentialQuantification,GeneralizedNewtypeDeriving,DeriveDataTypeable,RankNTypes #-}
 
 module HyphenExceptions (translatePyException, translatePyExceptionIfAny,
                          translatingHsExcepts, captureAsyncExceptions) where
@@ -95,7 +91,7 @@ translatePyException = alloca (
             case hsExceptionObj of
               (MonoObj ty' ptr) -> when (ty' == someExceptionHsType) $ do
                 let ex = Unsafe.Coerce.unsafeCoerce ptr :: SomeException
-                    py_DECREF_whenNotNull pyobj 
+                    py_DECREF_whenNotNull pyobj
                       = when (pyobj /= nullPyObj) $ py_DECREF pyobj
                 py_DECREF =<< peek store_type
                 py_DECREF_whenNotNull =<< peek store_value
@@ -110,7 +106,7 @@ translatePyException = alloca (
 
 
 pyErr_RestoreWrapped :: PyException -> IO ()
-pyErr_RestoreWrapped (PyException type_fp value_fp trace_fp) 
+pyErr_RestoreWrapped (PyException type_fp value_fp trace_fp)
   = withForeignPtr type_fp (
     \ type_obj -> withForeignPtr value_fp (
       \ value_obj -> withForeignPtr trace_fp (
@@ -247,12 +243,12 @@ captureAsyncExceptions dispose action = Exception.mask $ \restore -> do
       -- exit into python. (Raising one async exception in Python is
       -- good enough!)
       eatFurtherExceptions :: IO ()
-      eatFurtherExceptions 
+      eatFurtherExceptions
         = do interrupt' <- Exception.try Exception.allowInterrupt
              case (interrupt' :: Either Exception.SomeException ())  of
                Left ex   -> eatFurtherExceptions
                Right ()  -> return ()
-                                  
+
   case interrupt of
     Left ex  -> dispose result >>. setPyExcAndEatFurtherExceptions ex
     Right () -> return result

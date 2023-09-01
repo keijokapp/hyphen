@@ -1,7 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE ScopedTypeVariables,ExistentialQuantification,GeneralizedNewtypeDeriving,DeriveDataTypeable #-}
 
 module HyphenTyCon where
 
@@ -117,7 +114,7 @@ tyConRepr'     abbrev tc@(TyCon {tyConLocation=InExplicitModuleNamed mname})
   = let name  = tyConName tc
         ok    = name /= (T.pack "_") && okPythonIdentif name
         adjN  = if ok then name else T.concat [T.pack "_['", name, T.pack "']"]
-    in if abbrev 
+    in if abbrev
        then T.concat [T.pack "hs.", mname, T.pack ".", adjN]
        else T.concat [T.pack "hs.", mname, T.pack ".", adjN, T.pack ".hs_tycon"]
 tyConRepr'     _ tc@(TyCon {tyConLocation=ivloc@(ImplicitlyVia {})})

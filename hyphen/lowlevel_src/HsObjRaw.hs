@@ -1,16 +1,11 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE ScopedTypeVariables,ExistentialQuantification,GeneralizedNewtypeDeriving,DeriveDataTypeable #-}
 
 module HsObjRaw (PolyObjCore(..), HsObj(..), objType, formObjOfType, formObjSimple,
                  transformObjTypes, transformObjTypes', resolveToType, alignTypes,
                  applyMono, apply, makeMonomorphic, tryMakeMonomorphic, doIO) where
 
---import Debug.Trace
 import Control.Arrow
 import Control.Monad
---import Control.Monad.Trans.Class
 import Data.Typeable    (Typeable, typeOf)
 import Data.Monoid
 import Data.Maybe

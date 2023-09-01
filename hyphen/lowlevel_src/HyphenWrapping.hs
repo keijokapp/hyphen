@@ -1,7 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE ScopedTypeVariables,ExistentialQuantification,GeneralizedNewtypeDeriving,DeriveDataTypeable #-}
 
 module HyphenWrapping where
 
@@ -27,7 +24,7 @@ import HsObjRaw
 -- Python TyCon (or HsType, or HsObjRaw) and other C functions which
 -- build the wrapping Python TyCon (or HsType, or HsObjRaw) from the
 -- stableptr we want inside.
--- 
+--
 -- Note that the functions we define here that take PyObjs as their
 -- arguments and 'unwrap' them do no checking that the PyObj they are
 -- provided with are of the Python types that are expected. (I.e., for

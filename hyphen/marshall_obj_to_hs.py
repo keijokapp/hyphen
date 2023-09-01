@@ -387,7 +387,7 @@ def set_hstype_hint(obj, known_so_far, fv_src):
 # Haskell type we're trying to decide. Such a hook is installed by
 # writing into the following dictionary; the key is the python type in
 # question, the value is a function which takes arguments
-# 
+#
 # (python_object, known_so_far, fv_src)
 #
 # with exactly the same meanings as the parameters of

@@ -1,8 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables,ExistentialQuantification,GeneralizedNewtypeDeriving,DeriveDataTypeable,RankNTypes #-}
 
 module Hyphen () where
 
@@ -468,7 +464,7 @@ ioPyObjFromPythonMPyObj_ = ioPyObjFromPythonMPyObj . const
 -- returns such a thing, inputting another function that can be used
 -- to restore the async exception masking state.
 ioPyObjFromPythonMPyObj :: ((IO a -> IO a) -> PythonM PyObj) -> IO PyObj
-ioPyObjFromPythonMPyObj makeAction = 
+ioPyObjFromPythonMPyObj makeAction =
   captureAsyncExceptions_PyObjReturn (
     \ restore -> liftM (fromMaybe nullPyObj) . runMaybeT $ makeAction restore)
 
@@ -617,7 +613,7 @@ hstype_gethead p _ = captureAsyncExceptions_PyObjReturn_ $ do
     Right (Var v, k) -> pythonateText  v
 
 foreign export ccall hstype_gethead_ll      :: PyObj -> Ptr () -> IO PyObj
-hstype_gethead_ll p _ = captureAsyncExceptions_PyObjReturn_ $ do 
+hstype_gethead_ll p _ = captureAsyncExceptions_PyObjReturn_ $ do
   hstype <- unwrapPythonHsType p
   case typeHead hstype of
     Left tyc         -> wrapPythonTyCon tyc
@@ -1030,20 +1026,20 @@ close_GHC_state stableSessionPtr = ioIntFromPythonMInt_ $ do
 -- | Fetch the integer which means GILRuleLazy
 
 foreign export ccall get_GIL_mode_lazy          :: IO Int
-get_GIL_mode_lazy       = 
+get_GIL_mode_lazy       =
   captureAsyncExceptions_IntReturn . const . return $ fromEnum GILRuleLazy
 
 -- | Fetch the integer which means GILRuleFancy
 
 foreign export ccall get_GIL_mode_fancy         :: IO Int
-get_GIL_mode_fancy      = 
+get_GIL_mode_fancy      =
   captureAsyncExceptions_IntReturn . const . return $ fromEnum GILRuleFancy
 
 -- | Convert a GILRule encoded as an integer to a nice Python string
 -- describing the GILRule
 
 foreign export ccall stringify_GIL_mode         :: Int -> IO PyObj
-stringify_GIL_mode      = 
+stringify_GIL_mode      =
   captureAsyncExceptions_PyObjReturn_ . pythonateString . displayFn . toEnum
   where displayFn GILRuleLazy  = "lazy"
         displayFn GILRuleFancy = "fancy"
@@ -1051,26 +1047,26 @@ stringify_GIL_mode      =
 -- | Fetch the integer which means SignalRuleLazy
 
 foreign export ccall get_signal_mode_lazy    :: IO Int
-get_signal_mode_lazy    = 
+get_signal_mode_lazy    =
   captureAsyncExceptions_IntReturn . const . return $ fromEnum SignalRuleLazy
 
 -- | Fetch the integer which means SignalRuleHaskell
 
 foreign export ccall get_signal_mode_haskell :: IO Int
-get_signal_mode_haskell = 
+get_signal_mode_haskell =
   captureAsyncExceptions_IntReturn . const . return $ fromEnum SignalRuleHaskell
 
 -- | Fetch the integer which means SignalRulePython
 
 foreign export ccall get_signal_mode_python  :: IO Int
-get_signal_mode_python  = 
+get_signal_mode_python  =
   captureAsyncExceptions_IntReturn . const . return $ fromEnum SignalRulePython
 
 -- | Convert a SignalRule encoded as an integer to a nice Python
 -- string describing the SignalRule
 
 foreign export ccall stringify_signal_mode   :: Int -> IO PyObj
-stringify_signal_mode   = 
+stringify_signal_mode   =
   captureAsyncExceptions_PyObjReturn_ . pythonateString . displayFn . toEnum
   where displayFn SignalRuleLazy    = "lazy"
         displayFn SignalRuleHaskell = "haskell"

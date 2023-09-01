@@ -206,7 +206,7 @@ hs_tupledacon_bylength = [hsprimitives['(' + (',' * (_l - 1)) + ')'] if _l != 1 
 # length i. Note hs_tupletycs_bylength[1] is 'missing'.
 hs_tupletycs_bylength  = list(map(datacon_tycon, hs_tupledacon_bylength))
 
-# Set containing all tuple type constructors 
+# Set containing all tuple type constructors
 hs_tupletycs           = set(hs_tupletycs_bylength) - set([None])
 
 # dictionary mapping a tuple type constructor to the length of the

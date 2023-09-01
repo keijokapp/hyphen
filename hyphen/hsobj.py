@@ -101,7 +101,7 @@ class HsObj(hslowlevel.HsObjRaw):
     ## (narrow_type and subst) which return HsObjRaw objects. We want
     ## to wrap them in HsObj so that when called on HsObjs the return
     ## is promoted to an HsObj.
-    
+
     def narrow_type(self, new_type):
         """To be called upon a polymorphic HsObj; we check that our type can
         be specialized to new_type; (which may itself be polymorphic,

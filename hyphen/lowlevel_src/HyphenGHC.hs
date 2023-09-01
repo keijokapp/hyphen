@@ -1,12 +1,8 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE ScopedTypeVariables,ExistentialQuantification,GeneralizedNewtypeDeriving,DeriveDataTypeable #-}
 
 module HyphenGHC (createGHCSession, importLibModules, importSrcModules, accessBasics,
                   TyNSElt) where
 
---import Debug.Trace
 import Control.Arrow
 import Control.Monad
 import Control.Monad.State.Strict

@@ -125,7 +125,7 @@ invocation = flatten([
 
     # Where to find C include files
     '-I' + py_include,
- 
+
     # Packages needed but not (by default) exposed
     '-package', 'ghc',
 

@@ -72,7 +72,7 @@ import os, os.path, sys
 from hyphen.caches import fetch_source_modules
 
 haskell_source_seeking_status = "NEVER_LOADED"
-        
+
 def find_and_load_haskell_source(check_full_path=False):
     """Look for Haskell source that we might wish to compile and import
     into our python program. (If this is not done, we can import
