@@ -1,7 +1,4 @@
 
-resolver: lts-18.16
+resolver: lts-21.9
 packages:
 - .
-
-arch: i386
-# arch: x86_64
