@@ -20,9 +20,9 @@ if os.name == 'posix':
 else:
     import hyphen.hslowlevel     as hslowlevel
 import hyphen.caches             as caches
-caches.precache_modules([
+caches.load_module(
     "Prelude", "Data.Complex", "Data.Maybe", "Data.Set", "Data.Map", "Data.Map.Strict",
-    "Data.Hashable", "GHC.Types", "GHC.Prim", "Data.Either", "Data.Text", "Data.ByteString"])
+    "Data.Hashable", "GHC.Types", "GHC.Prim", "Data.Either", "Data.Text", "Data.ByteString")
 
 import hyphen.utils              as utils
 import hyphen.wrapping_pyfns     as wrapping_pyfns
