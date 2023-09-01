@@ -1,7 +1,4 @@
-*~
 *.pyc
-Test.hi
-Test.o
 hyphen/lowlevel_inter
 hyphen/hslowlevel*.so
 hyphen/hslowlevel*.dll

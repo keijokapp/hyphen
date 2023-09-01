@@ -15,9 +15,15 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Test
   -- other-modules:
   other-extensions:    DeriveDataTypeable
-  build-depends:       base, text, transformers, mtl, parsec, hashable, unordered-containers, ghc-paths
+  build-depends:       base,
+                       text,
+                       transformers,
+                       mtl,
+                       parsec,
+                       hashable,
+                       unordered-containers,
+                       ghc-paths
   -- hs-source-dirs:
   default-language:    Haskell2010
