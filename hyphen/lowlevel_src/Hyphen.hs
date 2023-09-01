@@ -41,11 +41,7 @@ import qualified System.Posix.Signals
 #endif
 import qualified System.Mem.Weak
 import System.Mem.Weak (Weak)
-#if __GLASGOW_HASKELL__ >= 900
 import qualified GHC.Driver.Monad as GhcMonad
-#else
-import qualified GhcMonad
-#endif
 
 import HyphenBase
 import PythonBase

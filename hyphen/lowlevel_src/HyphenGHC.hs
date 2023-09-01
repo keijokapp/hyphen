@@ -23,84 +23,28 @@ import qualified Data.Traversable
 import qualified Unsafe.Coerce
 import qualified GHC
 import qualified GHC.Paths
-#if __GLASGOW_HASKELL__ >= 902
 import qualified GHC.Builtin.Types    as GHCTysWiredIn
-#elif __GLASGOW_HASKELL__ >= 900
-import qualified GHC.Builtin.Names    as GHCPrelNames
-import qualified GHC.Builtin.Types    as GHCTysWiredIn
-#elif __GLASGOW_HASKELL__ >= 802
-import qualified PrelNames   as GHCPrelNames
-import qualified TysWiredIn  as GHCTysWiredIn
-#else
-import qualified StaticFlags as GHCStaticFlags
-#endif
-#if __GLASGOW_HASKELL__ >= 900
 import qualified GHC.SysTools as GHCSysTools
-#else
-import qualified SysTools    as GHCSysTools
-#endif
-#if __GLASGOW_HASKELL__ >= 900
 import qualified GHC.SysTools.BaseDir as GHCSysToolsBaseDir
-#elif __GLASGOW_HASKELL__ >= 808
-import qualified SysTools.BaseDir as GHCSysToolsBaseDir
-#endif
-#if __GLASGOW_HASKELL__ >= 900
 import qualified GHC.Core.TyCon       as GHCTyCon
 import qualified GHC.Types.Name.Occurrence     as GHCOccName
 import qualified GHC.Unit.Types      as GHCModule
 import qualified GHC.Unit.Module.Name
-#else
-import qualified TyCon       as GHCTyCon
-import qualified OccName     as GHCOccName
-import qualified Module      as GHCModule
-#endif
-#if __GLASGOW_HASKELL__ >= 900
 import qualified GHC.Core.Type as GHCKind
-#elif __GLASGOW_HASKELL__ >= 810
-import qualified Type        as GHCKind
-#elif __GLASGOW_HASKELL__ >= 800
-import qualified Kind        as GHCKind
-#endif
-#if __GLASGOW_HASKELL__ >= 902
 import qualified GHC.Types.SourceError
 import qualified GHC.Types.Target
 import qualified GHC.Unit.Module.Graph
 import qualified GHC.Unit.Module.ModSummary
 import qualified GHC.Types.TyThing         as GHCType
 import qualified GHC.Core.Type
-#elif __GLASGOW_HASKELL__ >= 900
-import qualified GHC.Driver.Types      as GHCHscTypes
-import qualified GHC.Driver.Types
-#else
-import qualified HscTypes    as GHCHscTypes
-#endif
-#if __GLASGOW_HASKELL__ >= 900
 import qualified GHC.Core.Type         as GHCType
 import qualified GHC.Driver.Session    as GHCDynFlags
 import qualified GHC.Driver.Main       as GHCHscMain
 import qualified GHC.Utils.Monad       as GHCMonadUtils
 import qualified GHC.Types.Var         as GHCVar
 import qualified Control.Monad.Catch as MC
-#else
-import qualified Type        as GHCType
-import qualified DynFlags    as GHCDynFlags
-import qualified HscMain     as GHCHscMain
-import qualified MonadUtils  as GHCMonadUtils
-import qualified Var         as GHCVar
-import qualified Outputable  as GHCOutputable
-import qualified ErrUtils    as GHCErrUtils
-import qualified Exception   as GHCException
-#endif
-#if __GLASGOW_HASKELL__ >= 900
 import qualified GHC.Core.ConLike     as GHCConLike
-#elif __GLASGOW_HASKELL__ >= 708
-import qualified ConLike     as GHCConLike
-#endif
-#if __GLASGOW_HASKELL__ >= 900
 import qualified GHC.Driver.Monad as GhcMonad
-#else
-import qualified GhcMonad
-#endif
 
 import HyphenBase
 import PythonBase
@@ -121,49 +65,16 @@ import HyphenExceptions
 
 ourInitGhcMonad :: (GHC.GhcMonad m) => Maybe FilePath -> m ()
 ourInitGhcMonad mb_top_dir = do
-#if __GLASGOW_HASKELL__ >= 802
-#else
-  GHCMonadUtils.liftIO $ GHCStaticFlags.initStaticOpts
-#endif
 
-#if __GLASGOW_HASKELL__ >= 810
   top_dir    <- GHCMonadUtils.liftIO $ GHCSysToolsBaseDir.findTopDir mb_top_dir
   mySettings <- GHCMonadUtils.liftIO $ GHCSysTools.initSysTools top_dir
   llvmc      <- GHCMonadUtils.liftIO $ GHCSysTools.lazyInitLlvmConfig top_dir
   dflags     <- GHCMonadUtils.liftIO (GHCDynFlags.initDynFlags (
                   GHCDynFlags.defaultDynFlags mySettings llvmc))
-#elif __GLASGOW_HASKELL__ >= 808
-  top_dir    <- GHCMonadUtils.liftIO $ GHCSysToolsBaseDir.findTopDir mb_top_dir
-  mySettings <- GHCMonadUtils.liftIO $ GHCSysTools.initSysTools top_dir
-  llvmc      <- GHCMonadUtils.liftIO $ GHCSysTools.initLlvmConfig top_dir
-  dflags     <- GHCMonadUtils.liftIO (GHCDynFlags.initDynFlags (
-                  GHCDynFlags.defaultDynFlags mySettings llvmc))
-#elif __GLASGOW_HASKELL__ >= 806
-  mySettings <- GHCMonadUtils.liftIO $ GHCSysTools.initSysTools mb_top_dir
-  llvmc      <- GHCMonadUtils.liftIO $ GHCSysTools.initLlvmConfig mb_top_dir
-  dflags     <- GHCMonadUtils.liftIO (GHCDynFlags.initDynFlags (
-                  GHCDynFlags.defaultDynFlags mySettings llvmc))
-#elif __GLASGOW_HASKELL__ >= 804
-  mySettings <- GHCMonadUtils.liftIO $ GHCSysTools.initSysTools mb_top_dir
-  llvmt      <- GHCMonadUtils.liftIO $ GHCSysTools.initLlvmTargets mb_top_dir
-  --let llvmt = GHCOutputable.panic "tbl: v_unsafeGlobalDynFlags: llvmTargets not initialised"
-  dflags     <- GHCMonadUtils.liftIO (GHCDynFlags.initDynFlags (
-                  GHCDynFlags.defaultDynFlags mySettings llvmt))
-#else
-  mySettings <- GHCMonadUtils.liftIO $ GHCSysTools.initSysTools mb_top_dir
-  dflags     <- GHCMonadUtils.liftIO
-                $ GHCDynFlags.initDynFlags (GHCDynFlags.defaultDynFlags mySettings)
-#endif
-#if __GLASGOW_HASKELL__ >= 802
+
   liftIO $ GHCDynFlags.setUnsafeGlobalDynFlags dflags
-#else
-#endif
-#if __GLASGOW_HASKELL__ >= 900
   env <- GHCMonadUtils.liftIO $ GHCHscMain.newHscEnv (
     GHCDynFlags.wopt_unset dflags GHCDynFlags.Opt_WarnWarningsDeprecations)
-#else
-  env <- GHCMonadUtils.liftIO $ GHCHscMain.newHscEnv dflags
-#endif
   GHC.setSession env
 
 -- | The essential function of the following function is to take a
@@ -194,32 +105,17 @@ reportingGHCErrors :: (Maybe String) -> GhcMonad.Ghc a -> GhcMonad.Ghc (Either E
 reportingGHCErrors msgHint action = do
   logref <- GHCMonadUtils.liftIO $ newIORef ""
   dflags <- GhcMonad.getSessionDynFlags
-#if __GLASGOW_HASKELL__ >= 900
   let prep  = GHC.setSessionDynFlags $ dflags
-#else
-  let prep  = GHC.setSessionDynFlags $ dflags { GHCDynFlags.log_action = logHandler logref }
-#endif
       clean = GHC.setSessionDynFlags dflags
-#if __GLASGOW_HASKELL__ >= 902
       handler :: GHC.Types.SourceError.SourceError -> GhcMonad.Ghc a
-#elif __GLASGOW_HASKELL__ >= 900
-      handler :: GHC.Driver.Types.SourceError -> GhcMonad.Ghc a
-#else
-      handler :: GHCHscTypes.SourceError -> GhcMonad.Ghc a
-#endif
       handler ex = GHCMonadUtils.liftIO $ do
         case msgHint of
           Just h  -> Control.Exception.throwIO . Control.Exception.AssertionFailed $
                      h ++ show ex
           Nothing -> Control.Exception.throwIO ex
 
-#if __GLASGOW_HASKELL__ >= 900
   result <- MC.handle handler $ do
     MC.bracket prep (const clean) . const $ do
-#else
-  result <- GHCException.ghandle handler $ do
-    GHCException.gbracket prep (const clean) . const $ do
-#endif
       action
   problems <- GHCMonadUtils.liftIO $ readIORef logref
 
@@ -227,23 +123,6 @@ reportingGHCErrors msgHint action = do
  where hintedWith :: (Maybe String) -> String -> String
        hintedWith Nothing  s = s
        hintedWith (Just h) s = concat [s, "\n(while trying to ", h, ")"]
-
-#if __GLASGOW_HASKELL__ >= 900
-#else
-       logHandler :: IORef String -> GHCDynFlags.LogAction
-#if __GLASGOW_HASKELL__ >= 800
-       logHandler ref dflags warnreason severity srcSpan style msg =
-#else
-       logHandler ref dflags severity srcSpan style msg =
-#endif
-           case severity of
-             GHCErrUtils.SevError ->  modifyIORef' ref (++ printDoc)
-             GHCErrUtils.SevFatal ->  modifyIORef' ref (++ printDoc)
-             _                    ->  return () -- ignore the rest
-         where cntx = GHCOutputable.initSDocContext dflags style
-               locMsg = GHCErrUtils.mkLocMessage severity srcSpan msg
-               printDoc = show (GHCOutputable.runSDoc locMsg cntx)
-#endif
 
 -- | Make a new GHC session and bring the Prelude into scope. This
 -- function translates any errors that arise into nice Python
@@ -259,35 +138,19 @@ createGHCSession = do
     ensureModulesInContext $ Set.fromList [T.pack "Prelude"])
   return session
 
-#if __GLASGOW_HASKELL__ >= 902
 isLiftedRuntimeRep = GHC.Core.Type.isLiftedRuntimeRep
-#elif __GLASGOW_HASKELL__ >= 802
-isLiftedRuntimeRep arg
-  | Just (tc, []) <- GHCType.splitTyConApp_maybe arg
-  , Just dc       <- GHCTyCon.isPromotedDataCon_maybe tc
-     = dc `GHCPrelNames.hasKey` GHCPrelNames.liftedRepDataConKey
-  | otherwise = False
-#endif
 
 makeDePolyGHCKindChecker :: GHC.TyVar -> Maybe (GHC.Type -> Bool, GHC.Type)
 makeDePolyGHCKindChecker v
-#if __GLASGOW_HASKELL__ >= 802
   | GHCType.isRuntimeRepVar v
                = Just (isLiftedRuntimeRep, GHCTysWiredIn.liftedRepTy)
-#endif
-#if __GLASGOW_HASKELL__ >= 800
   | GHCKind.isLiftedTypeKind (GHCType.tyVarKind v)
                = Just (GHCKind.isLiftedTypeKind, GHCType.liftedTypeKind)
-#endif
   | otherwise  = Nothing
 
 dePolyGHCKind :: GHC.Kind -> Maybe (GHC.Kind, [GHC.Type -> Bool])
 dePolyGHCKind k =
-#if __GLASGOW_HASKELL__ >= 902
   do let (vars, rest)  = GHC.splitForAllTyCoVars k
-#else
-  do let (vars, rest)  = GHC.splitForAllTys k
-#endif
      checkers <- mapM makeDePolyGHCKindChecker vars
      return (GHCType.substTyWith vars (map snd checkers) rest,
              map fst checkers)
@@ -303,12 +166,7 @@ unpackSimpleGHCKind :: GHC.Kind -> Maybe Kind
 unpackSimpleGHCKind k
   | GHCType.isFunTy k   = do (Kind ks') <- unpackSimpleGHCKind $ GHCType.funResultTy k
                              (Kind . (: ks')) <$> unpackSimpleGHCKind (GHCType.funArgTy k)
-#if __GLASGOW_HASKELL__ >= 800
   | otherwise           = do guard (GHCKind.isLiftedTypeKind k) >> (Just $ Kind [])
-#else
-  | otherwise           = do (kcon, _) <- GHCType.splitTyConApp_maybe k
-                             guard (kcon == GHCType.liftedTypeKindTyCon) >> (Just $ Kind [])
-#endif
 
 -- The basic process of importing Haskell names splits into three
 -- steps. In the first step, we invoke GHCI to read the module and we
@@ -345,23 +203,14 @@ readGHCModule :: Text -> GhcMonad.Ghc [GHC.TyThing]
 readGHCModule name = do
   mod        <- GHC.findModule (GHC.mkModuleName $ T.unpack name) Nothing
   mi         <- GHC.getModuleInfo mod
-#if __GLASGOW_HASKELL__ >= 804
   xinfos      <- mapM (GHC.getInfo False) $ maybe [] GHC.modInfoExports mi
   return [a |  Just (a, _, _, _, _) <- xinfos]
-#elif __GLASGOW_HASKELL__ >= 708
-  xinfos      <- mapM (GHC.getInfo False) $ maybe [] GHC.modInfoExports mi
-  return [a |  Just (a, _, _, _) <- xinfos]
-#else
-  xinfos      <- mapM GHC.getInfo $ maybe [] GHC.modInfoExports mi
-  return [a |  Just (a, _, _) <- xinfos]
-#endif
 
 -----------------------------
 
 -- The following functions handle the second stage of importing a
 -- module: converting TyThings into PreObjs and TyNSElts
 
-#if __GLASGOW_HASKELL__ >= 806
 -- The constructor for the function type was officially renamed in GHC 8.6
 -- We want to undo the effect of this renaming
 newFnTyCon = mkTyCon (T.pack "ghc-prim") (T.pack "GHC.Prim") (T.pack "->")
@@ -369,10 +218,6 @@ newFnTyCon = mkTyCon (T.pack "ghc-prim") (T.pack "GHC.Prim") (T.pack "->")
 normalizeTyCon :: TyCon -> TyCon
 normalizeTyCon tyc | tyc == newFnTyCon = fnTyCon
 normalizeTyCon tyc | otherwise         = tyc
-#else
-normalizeTyCon :: TyCon -> TyCon
-normalizeTyCon = id
-#endif
 
 -- | Convert a Data constructor into a TyCon, if we can. (We can't if,
 -- say, it uses unboxed types or something like that.) We usually
@@ -382,21 +227,11 @@ normalizeTyCon = id
 -- Maybe TyCLocation.
 
 transformGHCTyc :: Maybe TyCLocation -> GHC.TyCon -> Maybe (TyCon, [GHC.Type -> Bool])
-#if __GLASGOW_HASKELL__ >= 900
 transformGHCTyc _ tyc | GHC.isFunTyCon tyc  = Just (fnTyCon, [const True, isLiftedRuntimeRep, isLiftedRuntimeRep])
-#endif
 transformGHCTyc loc tyc = do
   let ghcName = GHC.getName tyc
       modl    = GHC.nameModule ghcName
-#if __GLASGOW_HASKELL__ >= 900
       pckg    = T.pack . GHCModule.unitString $ GHC.moduleUnit modl
-#elif __GLASGOW_HASKELL__ >= 800
-      pckg    = T.pack . GHCModule.unitIdString $ GHC.moduleUnitId modl
-#elif __GLASGOW_HASKELL__ >= 710
-      pckg    = T.pack . GHCModule.packageKeyString $ GHC.modulePackageKey modl
-#else
-      pckg    = T.pack . GHCModule.packageIdString $ GHC.modulePackageId modl
-#endif
       mname   = T.pack . GHC.moduleNameString $ GHC.moduleName modl
       oname   = T.pack . GHCOccName.occNameString $ GHC.getOccName ghcName
       loc'    = fromMaybe (InExplicitModuleNamed mname) loc
@@ -417,11 +252,7 @@ transformGHCTyNSElt import_module tyc = let
   fullname     = T.concat [import_module, T.pack ".", oname]
   args         = [ Var . (T.append $ T.pack "arg_") . T.pack . show $ i
                  | i <- [1..GHCTyCon.tyConArity tyc]] :: [Var]
-#if __GLASGOW_HASKELL__ >= 800
   in case GHCTyCon.expandSynTyCon_maybe tyc args of
-#else
-  in case GHCTyCon.tcExpandTyCon_maybe tyc args of
-#endif
     Nothing -> do
       (tyc', _) <- transformGHCTyc (Just $ InExplicitModuleNamed import_module) tyc
       return (if tyc' == fnTyCon then T.pack "(->)" else oname, Left tyc')
@@ -485,11 +316,7 @@ transformGHCType n ivt = transformGHCType' (PreTycLoc n ivt []). GHCType.expandT
 
 transformGHCType' :: PreTycLoc -> GHC.Type -> Maybe HsType
 transformGHCType' locSoFar typ
-#if __GLASGOW_HASKELL__ >= 902
   = let (vars,   rest)  = GHC.splitForAllTyCoVars typ
-#else
-  = let (vars,   rest)  = GHC.splitForAllTys typ
-#endif
     in case splitConstraint rest of
       (Just c, rest') -> transformGHCType' locSoFar rest'
       (Nothing, _)    -> case GHCType.splitTyConApp_maybe rest of
@@ -536,21 +363,8 @@ transformGHCTyVar tyv = do
 splitConstraint :: GHC.Type -> (Maybe GHC.Type, GHC.Type)
 splitConstraint ty = case GHCType.splitFunTy_maybe ty of
   Nothing          -> (Nothing, ty)
-#if __GLASGOW_HASKELL__ >= 900
   Just (_, src, dest) -> if GHCType.tcIsConstraintKind (GHCType.typeKind src)
                             then (Just src, dest) else (Nothing, ty)
-#elif __GLASGOW_HASKELL__ >= 806
-  Just (src, dest) -> if GHCType.tcIsConstraintKind (GHCType.typeKind src)
-                         then (Just src, dest) else (Nothing, ty)
-#elif __GLASGOW_HASKELL__ >= 800
-  Just (src, dest) -> if GHCKind.isConstraintKind (GHCType.typeKind src)
-                         then (Just src, dest) else (Nothing, ty)
-#else
-  Just (src, dest) -> case GHCType.splitTyConApp_maybe (GHCType.typeKind src) of
-    Nothing -> (Nothing, ty)
-    Just (tyc, _) -> if tyc == GHCType.constraintKindTyCon
-                     then (Just src, dest) else (Nothing, ty)
-#endif
 
 -- | Transform a GHC 'id' (basically, an object namespace thing that
 -- isn't a data constructor) into a (<name>, PreObj) pair.
@@ -632,12 +446,8 @@ transformGHCDataCon import_module dc = fromMaybe [] $ do
 
 transformGHCTyThing :: Text -> GHC.TyThing -> ([(Text, PreObj)], [(Text, TyNSElt)])
 transformGHCTyThing im (GHCType.AnId     id) = (maybeToList $ transformGHCId      im id, [])
-#if __GLASGOW_HASKELL__ >= 708
 transformGHCTyThing im (GHCType.AConLike (GHCConLike.RealDataCon dc))
                                              = (transformGHCDataCon im dc,               [])
-#else
-transformGHCTyThing im (GHCType.ADataCon dc) = (transformGHCDataCon im dc,               [])
-#endif
 transformGHCTyThing im (GHCType.ATyCon   tc) = ([], maybeToList (transformGHCTyNSElt im tc))
 transformGHCTyThing _  _                     = ([],                                      [])
 
@@ -758,11 +568,7 @@ preModuleOtherModsOfInterest (preobjs, tynselts)
 -- from the module in question.
 
 readGHCModuleTycCanon :: Text -> GhcMonad.Ghc (HashMap TyCon TyCon, Maybe Text)
-#if __GLASGOW_HASKELL__ >= 900
 readGHCModuleTycCanon mname = MC.handle handler $ do
-#else
-readGHCModuleTycCanon mname = GHCException.ghandle handler $ do
-#endif
   --GHCMonadUtils.liftIO $ print mname
   result <- reportingGHCErrors Nothing $ do
     tyths      <- readGHCModule mname
@@ -809,11 +615,7 @@ ensureModulesInContext toEnsure = do
       newImps  = toEnsure `Set.difference` curImps
   GHC.setContext $ [
     (GHC.IIDecl $ (GHC.simpleImportDecl . GHC.mkModuleName . T.unpack $ modName)  {
-#if __GLASGOW_HASKELL__ >= 810
         GHC.ideclQualified = GHC.QualifiedPre})
-#else
-        GHC.ideclQualified = True})
-#endif
     | modName <- Set.toList newImps] ++ curiis
 
 -- | Make a string like (x1, x2, x3, ..., xn), where the xs are all
@@ -842,11 +644,7 @@ accessBasics :: GhcMonad.Session -> PythonM (HashMap Text HsObj)
 accessBasics sess = do
   let evalToPreObj :: (String, String) -> GhcMonad.Ghc (Maybe (Text, PreObj))
       evalToPreObj (name, expr) = do
-#if __GLASGOW_HASKELL__ >= 802
         exprTy <- GHC.exprType GHC.TM_Inst expr
-#else
-        exprTy <- GHC.exprType expr
-#endif
         return $ do
           hst <- transformGHCType (T.pack "") False exprTy
           return (T.pack name, (T.pack expr, hst))
@@ -900,45 +698,19 @@ importSrcModules :: GhcMonad.Session -> [Text] -> PythonM (
   HashMap Text (HashMap Text HsObj, HashMap Text TyNSElt))
 importSrcModules sess paths = do
   srcModuleNames <- performGHCOps Nothing sess $ do
-#if __GLASGOW_HASKELL__ >= 904
     dflags <- GhcMonad.getSessionDynFlags
     GHC.setTargets [GHC.Types.Target.Target {
                        GHC.Types.Target.targetId = GHC.Types.Target.TargetFile (T.unpack path) Nothing,
                        GHC.Types.Target.targetAllowObjCode = True,
                        GHC.Types.Target.targetUnitId       = GHCDynFlags.homeUnitId_ dflags,
                        GHC.Types.Target.targetContents     = Nothing}             | path <- paths]
-#elif __GLASGOW_HASKELL__ >= 902
-    GHC.setTargets [GHC.Types.Target.Target {
-                       GHC.Types.Target.targetId = GHC.Types.Target.TargetFile (T.unpack path) Nothing,
-                       GHC.Types.Target.targetAllowObjCode = True,
-                       GHC.Types.Target.targetContents     = Nothing}             | path <- paths]
-#else
-    GHC.setTargets [GHCHscTypes.Target {
-                       GHCHscTypes.targetId = GHCHscTypes.TargetFile (T.unpack path) Nothing,
-                       GHCHscTypes.targetAllowObjCode = True,
-                       GHCHscTypes.targetContents     = Nothing}             | path <- paths]
-#endif
-#if __GLASGOW_HASKELL__ >= 902
     moduleGraph <- liftM GHC.Unit.Module.Graph.mgModSummaries $ GHC.depanal [] True
-#elif __GLASGOW_HASKELL__ >= 804
-    moduleGraph <- liftM GHCHscTypes.mgModSummaries $ GHC.depanal [] True
-#else
-    moduleGraph <- GHC.depanal [] True
-#endif
-    curiis      <- GHC.getContext
-    loadOK      <- GHC.load GHC.LoadAllTargets
+    curiis <- GHC.getContext
+    loadOK <- GHC.load GHC.LoadAllTargets
     GHC.setContext curiis
     case loadOK of
       GHC.Succeeded ->
-#if __GLASGOW_HASKELL__ >= 902
         return [T.pack . GHC.Unit.Module.Name.moduleNameString
                 . GHCModule.moduleName . GHC.Unit.Module.ModSummary.ms_mod $ ms | ms <- moduleGraph]
-#elif __GLASGOW_HASKELL__ >= 900
-        return [T.pack . GHC.Unit.Module.Name.moduleNameString
-                . GHCModule.moduleName . GHCHscTypes.ms_mod $ ms | ms <- moduleGraph]
-#else
-        return [T.pack . GHCModule.moduleNameString
-                . GHCModule.moduleName . GHCHscTypes.ms_mod $ ms | ms <- moduleGraph]
-#endif
       GHC.Failed    -> return []
   importLibModules sess srcModuleNames

@@ -3,16 +3,8 @@
 #include <stdio.h>
 #include <HsFFI.h>
 #include <signal.h>
-
 #include "Hyphen_stub.h"
-
-#if __GLASGOW_HASKELL__ >= 804
-#else
-extern void __stginit_Hyphen ( void );
-#endif
-
 #include "structmember.h"
-
 
 static PyObject         *HsException;
 static HsPtr             ghc_interpreter_state = 0;
@@ -1445,10 +1437,6 @@ PyInit_hslowlevel(void)
 #endif
   main_thread_state_ptr = PyThreadState_Get();
   assert(main_thread_state_ptr != 0);
-#if __GLASGOW_HASKELL__ >= 804
-#else
-  hs_add_root(__stginit_Hyphen);
-#endif
 
   ghc_srcmodules_loaded = 0;
   if (prepare_GHC_state(&ghc_interpreter_state) == -1)
