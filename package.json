@@ -1,0 +1,20 @@
+{
+  "type": "module",
+  "name": "haskell",
+  "version": "0.1.0",
+  "description": "",
+  "main": "lib/index.js",
+  "author": "Keijo Kapp <keijo.kapp@gmail.com>",
+  "license": "ISC",
+  "scripts": {
+    "install": "cmake-js compile",
+    "lint": "eslint lib"
+  },
+  "devDependencies": {
+    "eslint": "^8.35.0",
+    "eslint-config-airbnb-base": "^15.0.0"
+  },
+  "dependencies": {
+    "node-api-headers": "^0.0.3"
+  }
+}

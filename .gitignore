@@ -6,3 +6,8 @@ hyphen/hslowlevel*.dll.a
 hyphen/lowlevel_src/hyphen_c.o
 hyphen/hslowlevel.pyd
 hyphen/hslowlevel.pyd.a
+/.stack-work
+/haskell.node
+__pycache__
+/node_modules
+/inter
