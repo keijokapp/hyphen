@@ -7,7 +7,6 @@
   "author": "Keijo Kapp <keijo.kapp@gmail.com>",
   "license": "ISC",
   "scripts": {
-    "install": "cmake-js compile",
     "lint": "eslint lib"
   },
   "devDependencies": {
