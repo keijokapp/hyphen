@@ -11,3 +11,4 @@ hyphen/hslowlevel.pyd.a
 __pycache__
 /node_modules
 /inter
+/dist-newstyle
